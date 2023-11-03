@@ -30,11 +30,11 @@ const IDB_KEYS = {
 export class Ffmpeg {
   ffmpeg: FFmpeg
 
-  async init() {
+  async init(loggerCb?: (msg: string) => void) {
     let coreURL: string, wasmURL: string
 
     this.ffmpeg = new FFmpeg()
-    this.initLogging()
+    this.initLogging(loggerCb)
 
     console.info('Loading ffmpeg')
     const { wasm, core } = (await this.getWasmFromIdb()) || {}
@@ -54,24 +54,29 @@ export class Ffmpeg {
     console.info('Loaded ffmpeg')
   }
 
-  initLogging() {
+  initLogging(cb?: (msg: string) => void) {
     this.ffmpeg.on('log', ({ message: msg }: LogEvent) => {
       console.info(msg)
+      cb?.(msg)
     })
   }
 
-  async transcode(file: File) {
+  async transcode(file: File, outputName: string) {
     console.info('starting transcode')
     await this.ffmpeg.writeFile('input.mp4', await fetchFile(file))
-    await this.ffmpeg.exec(['-i', 'input.mp4', ...settings, 'output.mp4'])
+    await this.ffmpeg.exec(['-i', 'input.mp4', ...settings, outputName])
 
     console.info('transcoding done')
-    const data = await this.ffmpeg.readFile('output.mp4')
+    const data = await this.ffmpeg.readFile(outputName)
     return URL.createObjectURL(new Blob([(data as Uint8Array).buffer], { type: 'video/mp4' }))
   }
 
   async listDir() {
     return await this.ffmpeg.listDir('/')
+  }
+
+  cancelTranscode() {
+    this.ffmpeg.terminate()
   }
 
   async getWasmFromIdb() {
