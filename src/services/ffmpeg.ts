@@ -4,23 +4,6 @@ import { downloadWithProgress, fetchFile } from '@ffmpeg/util'
 import { get, set } from 'idb-keyval'
 import { blobToUrl } from '@/utils/bufferToFile'
 
-const settings = [
-  '-c:v',
-  'libx264',
-  '-preset',
-  'slow',
-  '-crf',
-  '51',
-  // '-minrate',
-  // '60',
-  // '-maxrate',
-  // '60',
-  '-r',
-  '15',
-  '-c:a',
-  'copy'
-]
-
 const BASE_URL = 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm'
 const IDB_KEYS = {
   core: 'ffmpeg-core.js',
@@ -61,10 +44,10 @@ export class Ffmpeg {
     })
   }
 
-  async transcode(file: File, outputName: string) {
+  async transcode(file: File, options: string[], outputName: string) {
     console.info('starting transcode')
     await this.ffmpeg.writeFile('input.mp4', await fetchFile(file))
-    await this.ffmpeg.exec(['-i', 'input.mp4', ...settings, outputName])
+    await this.ffmpeg.exec(['-i', 'input.mp4', ...options, outputName])
 
     console.info('transcoding done')
     const data = await this.ffmpeg.readFile(outputName)

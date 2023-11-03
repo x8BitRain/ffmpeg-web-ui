@@ -19,7 +19,7 @@
       <p v-for="(log, index) in logStack" :key="index">{{ log }}</p>
     </div>
     <div class="links">
-      <a href="">Github</a>
+      <a href="https://github.com/x8BitRain/ffmpeg-web-ui">Github</a>
     </div>
   </div>
 </template>
@@ -68,7 +68,11 @@ const startTranscode = async () => {
   }
   logStack.value = []
   transcoding.value = true
-  const transcodedUrl = await Ffmpeg.transcode(file.value, settingsInputSuffix.value)
+  const transcodedUrl = await Ffmpeg.transcode(
+    file.value,
+    settingsInput.value.split(' '),
+    settingsInputSuffix.value
+  )
   transcoding.value = false
   download(transcodedUrl, settingsInputSuffix.value)
 }
