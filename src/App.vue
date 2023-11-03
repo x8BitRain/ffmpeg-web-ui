@@ -102,6 +102,9 @@ const cancelTranscode = () => {
     gap: 1rem;
     margin-top: 1rem;
     margin-bottom: 1rem;
+    @media screen and (max-width: 768px) {
+      flex-wrap: wrap;
+    }
     &__options-prefix,
     &__options,
     &__options-suffix {

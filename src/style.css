@@ -54,6 +54,7 @@ button:focus-visible {
 
 body {
   height: 100vh;
+  margin: 0;
 }
 
 #app {
